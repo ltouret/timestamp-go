@@ -15,6 +15,7 @@ Add Analytics:
     Geolocation Data: If it's relevant to your application, consider using geolocation services to gather more precise location data about users.
     latency for every request? https://gin-gonic.com/docs/examples/custom-middleware/
 Add Analytics Model for the data, using sql db and gorm
+Add rate limiter
 
 Check how to run go in free serverless and just point dns to it? Or in vps with caddy
 
