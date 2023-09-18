@@ -9,11 +9,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//? add middleware that will log analytics
+// ? add middleware that will log analytics
+// use dependecy injection to add db here?
+func v1MiddlewareTest() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// before request
+		timestamp := c.Param("timestamp") //! sanitize this before saving it in db
+
+		t := time.Now()
+
+		c.Next()
+
+		// after request
+		latency := time.Since(t)
+		fmt.Println(c.Request.UserAgent(), c.ClientIP(), c.Request.Referer(), t.Format(http.TimeFormat), latency, timestamp) //! erase later, add this to mdw
+	}
+}
 
 // ? clean this
 func timestampEndpoint(c *gin.Context) {
-	fmt.Println(c.Request.UserAgent(), c.ClientIP()) //! erase later, add this to mdw
 	timestamp := c.Param("timestamp")
 	normalTimestamp, err := time.Parse("2006-01-02", timestamp)
 	if err == nil {
@@ -53,8 +67,9 @@ func SetupRoutes(router *gin.RouterGroup) {
 
 func main() {
 	router := gin.Default()
+	router.Use(gin.Recovery()) // useful?
 	apiGroup := router.Group("/api")
-	v1 := apiGroup.Group("/v1")
+	v1 := apiGroup.Group("/v1", v1MiddlewareTest())
 	SetupRoutes(v1)
 	router.Run(":8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
