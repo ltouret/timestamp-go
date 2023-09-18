@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -20,34 +19,39 @@ import (
 // 	})
 // }
 
+// ? move this to its own endpoint on top of this
 func SetupRoutes(router *gin.RouterGroup) {
 	router.GET("/:timestamp", func(c *gin.Context) {
 		timestamp := c.Param("timestamp")
+		normalTimestamp, err := time.Parse("2006-01-02", timestamp)
+		if err == nil {
+			unixTime := normalTimestamp.UTC().Unix() * 1000
+			c.JSON(http.StatusOK, gin.H{
+				"unix": unixTime,
+				"utc":  normalTimestamp.UTC().Format(http.TimeFormat),
+			})
+			return
+		}
 		timestampUnix, err := strconv.ParseInt(timestamp, 10, 64)
-		// var returnDate time.Time
-		if err != nil {
-			fmt.Println("Not Unix")
+		if err == nil {
+			timestampUnix /= 1000
+			dtUnix := time.Unix(timestampUnix, 0)
+			c.JSON(http.StatusOK, gin.H{
+				"unix": timestampUnix * 1000,
+				"utc":  dtUnix.UTC().Format(http.TimeFormat),
+			})
+			return
 		}
-		timestampUnix /= 1000
-		dtUnix := time.Unix(timestampUnix, 0)
-		dt, err := time.Parse("2020-12-25", timestamp)
-		if err != nil {
-			fmt.Println("Not date")
-		}
-		// date :=
-		fmt.Println(timestampUnix, dt, dtUnix)
-		currentTime := time.Now().UTC().Format(time.RFC822)
-		fmt.Println("The time is", currentTime, timestamp, c.ClientIP())
 		c.JSON(http.StatusOK, gin.H{
-			"unix": currentTime,
-			"utc":  currentTime,
+			"error": "invalid Date",
 		})
 	})
 }
 
 func main() {
 	router := gin.Default()
-	v1 := router.Group("/v1")
+	apiGroup := router.Group("/api")
+	v1 := apiGroup.Group("/v1")
 	SetupRoutes(v1)
 	router.Run(":8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
