@@ -1,6 +1,7 @@
 TODO:
 
-Add .Env
+Add .Env:
+    Change to mode prod, change the trusted all proxies
 Add Analytics:
     User-Agent: As you mentioned, capturing the User-Agent header can help you identify the user's browser, operating system, and device.
     Client IP Address: Storing the IP address of the client can help you track the geographical location of your users.
@@ -12,4 +13,9 @@ Add Analytics:
     Error Messages: Log any error messages or exceptions that occur during API requests for debugging and error analysis.
     Timestamp of Request: Record the timestamp when each request is received to analyze usage patterns over time.
     Geolocation Data: If it's relevant to your application, consider using geolocation services to gather more precise location data about users.
+    latency for every request? https://gin-gonic.com/docs/examples/custom-middleware/
 Add Analytics Model for the data, using sql db and gorm
+
+Check how to run go in free serverless and just point dns to it? Or in vps with caddy
+
+used gin and air
