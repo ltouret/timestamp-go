@@ -1,0 +1,15 @@
+TODO:
+
+Add .Env
+Add Analytics:
+    User-Agent: As you mentioned, capturing the User-Agent header can help you identify the user's browser, operating system, and device.
+    Client IP Address: Storing the IP address of the client can help you track the geographical location of your users.
+    Response Time: Measure the time it takes for your API to respond to requests. This can help identify performance bottlenecks.
+    HTTP Status Codes: Log the status codes returned by your API (e.g., 200 for success, 404 for not found, 500 for server errors) to monitor the health of your API.
+    Query Parameters: If applicable, log any query parameters sent with the request. This can provide insights into how users are using your API.
+    User ID or Session ID: If your API requires authentication, you can associate requests with specific users or sessions for user-specific analytics.
+    Referer: Capture the referer header to see where the request originated from, which can be valuable for tracking referral sources.
+    Error Messages: Log any error messages or exceptions that occur during API requests for debugging and error analysis.
+    Timestamp of Request: Record the timestamp when each request is received to analyze usage patterns over time.
+    Geolocation Data: If it's relevant to your application, consider using geolocation services to gather more precise location data about users.
+Add Analytics Model for the data, using sql db and gorm
