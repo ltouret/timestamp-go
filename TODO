@@ -12,7 +12,8 @@ Add Analytics:
     Timestamp of Request: Record the timestamp when each request is received to analyze usage patterns over time.
      Save if 400 or 200 to know if query ok or not -->
 Add .Env:
-    Change to mode prod, change the trusted all proxies
+    user and password of db
+    <!-- Change to mode prod, change the trusted all proxies -->
 Add a frontend(?)
 Move all the db modules to their own module, or at least setup module ->  Clean and move to its own files
 <!-- Add the other projects of FCC here? -->

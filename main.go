@@ -131,6 +131,8 @@ func main() {
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
+	// user := os.Getenv("DB_USER")
+	// pass := os.Getenv("DB_PASS")
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/")
 	if err != nil {
 		//! quit code here
