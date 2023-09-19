@@ -1,7 +1,7 @@
 TODO:
 
 Add rate limiter - https://github.com/ulule/limiter ?
-Add dependecy injection https://markphelps.me/posts/dependency-injection-explained/
+!Add dependecy injection https://markphelps.me/posts/dependency-injection-explained/
 !Add Analytics Model for the data, using raw sql
 Add Analytics:
     !User-Agent: As you mentioned, capturing the User-Agent header can help you identify the user's browser, operating system, and device.
@@ -13,6 +13,8 @@ Add Analytics:
 Add .Env:
     Change to mode prod, change the trusted all proxies
 Add a frontend(?)
+Move all the db modules to their own module, or at least setup module
+Add the other projects of FCC here?
 
 Check how to run go in free serverless and just point dns to it? Or in vps with caddy
 

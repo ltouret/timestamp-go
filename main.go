@@ -21,12 +21,17 @@ func truncateText(s string, max int) string {
 
 // ? add middleware that will log analytics
 // use dependecy injection to add db here?
-func v1MiddlewareTest() gin.HandlerFunc {
+func v1MiddlewareTest(analyticsDb *AnalyticsService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// before request
-		timestamp := c.Param("timestamp") //! sanitize this before saving it in db
-
 		t := time.Now()
+
+		timestamp := truncateText(t.Format(http.TimeFormat), 255)
+		// query := truncateText(c.Param("timestamp"), 255) //! sanitize this before saving it in db
+		// userAgent := truncateText(c.Request.UserAgent(), 255)
+		// clientIP := c.ClientIP()
+		// referer := truncateText(c.Request.Referer(), 255)
+		// latency := time.Since(t)
 
 		c.Next()
 
@@ -75,18 +80,24 @@ func SetupRoutes(router *gin.RouterGroup) {
 	router.GET("/:timestamp", timestampEndpoint)
 }
 
+type AnalyticsService struct {
+	db *sql.DB
+}
+
+// NewUserService 'constructs' a UserService that is ready to use.
+// It requires an initialized sql.DB instance.
+func NewAnalyticsService(db *sql.DB) (*AnalyticsService, error) {
+	return &AnalyticsService{db}, nil
+}
+
 // ? add in .env
 // DB_USER = root
 // DB_PASS =
-func SetupDb() {
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/")
-	if err != nil {
-		fmt.Println("Connection Db", err)
-	}
-	defer db.Close()
-
+// ? dependency injection this or not?
+// ! setup only for timestamp-go, will need more work for others
+func SetupDb(db *sql.DB) {
 	// Check if the database exists
-	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS analytics")
+	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS analytics")
 	if err != nil {
 		fmt.Println("Create Db", err)
 	}
@@ -98,6 +109,7 @@ func SetupDb() {
 	}
 
 	// Create the table if it doesn't exist
+	// ? if i use this same porject to do the other api for FCC then i will to create more tables, and each table will have the analytics of a microservice
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS test (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -117,11 +129,22 @@ func SetupDb() {
 }
 
 func main() {
-	SetupDb() //? add here or in another main...
+	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/")
+	if err != nil {
+		//! quit code here
+		fmt.Println("Connection Db", err)
+	}
+	defer db.Close()
+	SetupDb(db) //? add here or in another main... -> if in another main no dep injection(?)
+	analyticsDb, err := NewAnalyticsService(db)
+	if err != nil {
+		//! quit code here
+		fmt.Println("analyticsDb", err)
+	}
 	router := gin.Default()
 	router.Use(gin.Recovery()) // useful for 500 error do i keep this?
 	apiGroup := router.Group("/api")
-	v1 := apiGroup.Group("/v1", v1MiddlewareTest())
+	v1 := apiGroup.Group("/v1", v1MiddlewareTest(analyticsDb))
 	SetupRoutes(v1)
 	router.Run(":8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
