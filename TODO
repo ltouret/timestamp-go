@@ -10,6 +10,7 @@ Add Analytics:
     !Query Parameters: If applicable, log any query parameters sent with the request. This can provide insights into how users are using your API.
     !User ID or Session ID: If your API requires authentication, you can associate requests with specific users or sessions for user-specific analytics.
     !Timestamp of Request: Record the timestamp when each request is received to analyze usage patterns over time.
+    *** Save if 400 or 200 to know if query ok or not
 Add .Env:
     Change to mode prod, change the trusted all proxies
 Add a frontend(?)

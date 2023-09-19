@@ -19,25 +19,22 @@ func truncateText(s string, max int) string {
 	return s[:max]
 }
 
+// ! *** Save if 400 or 200 to know if query ok or not
 // ? add middleware that will log analytics
-// use dependecy injection to add db here?
 func v1MiddlewareTest(analyticsDb *AnalyticsService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// before request
 		t := time.Now()
-
-		timestamp := truncateText(t.Format(http.TimeFormat), 255)
-		// query := truncateText(c.Param("timestamp"), 255) //! sanitize this before saving it in db
-		// userAgent := truncateText(c.Request.UserAgent(), 255)
-		// clientIP := c.ClientIP()
-		// referer := truncateText(c.Request.Referer(), 255)
-		// latency := time.Since(t)
-
 		c.Next()
-
-		// after request
-		latency := time.Since(t)
-		fmt.Println(c.Request.UserAgent(), c.ClientIP(), c.Request.Referer(), t.Format(http.TimeFormat), latency, timestamp) //! erase later, add this to mdw
+		responseTime := time.Since(t).String()
+		timestamp := truncateText(t.Format(http.TimeFormat), 255)
+		queryParameters := truncateText(c.Param("timestamp"), 255) //? do i leave this null if no query?
+		userAgent := truncateText(c.Request.UserAgent(), 255)
+		clientIP := c.ClientIP()
+		insertStatement := "INSERT INTO timestamp (timestamp, queryParameters, userAgent, clientIP, responseTime) VALUES (?, ?, ?, ?, ?)"
+		_, err := analyticsDb.db.Exec(insertStatement, timestamp, queryParameters, userAgent, clientIP, responseTime)
+		if err != nil {
+			fmt.Println("Error inserting data:", err)
+		}
 	}
 }
 
@@ -84,8 +81,6 @@ type AnalyticsService struct {
 	db *sql.DB
 }
 
-// NewUserService 'constructs' a UserService that is ready to use.
-// It requires an initialized sql.DB instance.
 func NewAnalyticsService(db *sql.DB) (*AnalyticsService, error) {
 	return &AnalyticsService{db}, nil
 }
@@ -95,6 +90,7 @@ func NewAnalyticsService(db *sql.DB) (*AnalyticsService, error) {
 // DB_PASS =
 // ? dependency injection this or not?
 // ! setup only for timestamp-go, will need more work for others
+// ? here maybe call setupDbTimestamp, setupDbFccProject2
 func SetupDb(db *sql.DB) {
 	// Check if the database exists
 	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS analytics")
@@ -110,8 +106,9 @@ func SetupDb(db *sql.DB) {
 
 	// Create the table if it doesn't exist
 	// ? if i use this same porject to do the other api for FCC then i will to create more tables, and each table will have the analytics of a microservice
+	//! *** Save if 400 or 200 to know if query ok or not
 	_, err = db.Exec(`
-        CREATE TABLE IF NOT EXISTS test (
+        CREATE TABLE IF NOT EXISTS timestamp (
             id INT AUTO_INCREMENT PRIMARY KEY,
             userAgent VARCHAR(255) DEFAULT NULL,
             clientIP VARCHAR(255) DEFAULT NULL,
