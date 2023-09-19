@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 func truncateText(s string, max int) string {
@@ -19,8 +21,6 @@ func truncateText(s string, max int) string {
 	return s[:max]
 }
 
-// ! *** Save if 400 or 200 to know if query ok or not
-// ? add middleware that will log analytics
 func v1MiddlewareTest(analyticsDb *AnalyticsService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		t := time.Now()
@@ -30,8 +30,9 @@ func v1MiddlewareTest(analyticsDb *AnalyticsService) gin.HandlerFunc {
 		queryParameters := truncateText(c.Param("timestamp"), 255) //? do i leave this null if no query?
 		userAgent := truncateText(c.Request.UserAgent(), 255)
 		clientIP := c.ClientIP()
-		insertStatement := "INSERT INTO timestamp (timestamp, queryParameters, userAgent, clientIP, responseTime) VALUES (?, ?, ?, ?, ?)"
-		_, err := analyticsDb.db.Exec(insertStatement, timestamp, queryParameters, userAgent, clientIP, responseTime)
+		statusCode := c.Writer.Status()
+		insertStatement := "INSERT INTO timestamp (timestamp, statusCode, queryParameters, userAgent, clientIP, responseTime) VALUES (?, ?, ?, ?, ?, ?)"
+		_, err := analyticsDb.db.Exec(insertStatement, timestamp, statusCode, queryParameters, userAgent, clientIP, responseTime)
 		if err != nil {
 			fmt.Println("Error inserting data:", err)
 		}
@@ -106,7 +107,6 @@ func SetupDb(db *sql.DB) {
 
 	// Create the table if it doesn't exist
 	// ? if i use this same porject to do the other api for FCC then i will to create more tables, and each table will have the analytics of a microservice
-	//! *** Save if 400 or 200 to know if query ok or not
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS timestamp (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -115,6 +115,7 @@ func SetupDb(db *sql.DB) {
             timestamp VARCHAR(255) DEFAULT NULL,
             responseTime VARCHAR(255) DEFAULT NULL,
             queryParameters VARCHAR(255) DEFAULT NULL,
+            statusCode INT DEFAULT NULL,
 			userUuid CHAR(36) DEFAULT NULL
         )
     `)
@@ -126,6 +127,10 @@ func SetupDb(db *sql.DB) {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
 	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/")
 	if err != nil {
 		//! quit code here
@@ -138,6 +143,8 @@ func main() {
 		//! quit code here
 		fmt.Println("analyticsDb", err)
 	}
+	ginMode := os.Getenv("GIN_MODE")
+	gin.SetMode(ginMode)
 	router := gin.Default()
 	router.Use(gin.Recovery()) // useful for 500 error do i keep this?
 	apiGroup := router.Group("/api")
