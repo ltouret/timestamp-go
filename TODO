@@ -1,3 +1,8 @@
+Procedure to develop new features:
+- Create a new branch based on the branch dev
+- Once the feature is done we merge the feature branch into dev
+- Git merge the dev branch into main
+
 TODO:
 
 Add rate limiter - https://github.com/ulule/limiter ?
