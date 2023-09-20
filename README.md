@@ -1,7 +1,11 @@
 timestamp-go
 ============
 
-timestamp-go is a simple API project that allows you to convert Unix timestamps to UTC strings and vice versa. It's built using Go and can handle a wide range of date inputs.
+Timestamp-go is a simple API project that allows you to convert Unix timestamps to UTC strings and vice versa. It's built using Go and can handle a wide range of date inputs.
+
+This project is a part of the freeCodeCamp Back End Development and APIs curriculum. You can find the project and its detailed instructions on the following freeCodeCamp link:
+
+**[Timestamp Project on freeCodeCamp](https://www.freecodecamp.org/learn/back-end-development-and-apis/back-end-development-and-apis-projects/timestamp-microservice)**
 
 API Endpoints
 -------------
