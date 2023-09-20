@@ -7,7 +7,7 @@ This project is a part of the freeCodeCamp Back End Development and APIs curricu
 
 **[Timestamp Project on freeCodeCamp](https://www.freecodecamp.org/learn/back-end-development-and-apis/back-end-development-and-apis-projects/timestamp-microservice)**
 
-![exercise 1](./exercices/exercise.png?raw=true "Title")
+![exercise 1](./exercises/exercise.png?raw=true "exercise 1")
 
 API Endpoints
 -------------
