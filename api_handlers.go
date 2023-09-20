@@ -11,7 +11,7 @@ import (
 )
 
 func timestampEndpoint(c *gin.Context) {
-	timestamp := c.Param("timestamp")
+	timestamp := c.Param("date")
 	normalTimestamp, err := time.Parse("2006-01-02", timestamp)
 	if err == nil {
 		unixTime := normalTimestamp.UTC().Unix() * 1000
@@ -45,5 +45,5 @@ func noTimestampEndpoint(c *gin.Context) {
 
 func SetupRoutes(router *gin.RouterGroup) {
 	router.GET("/", noTimestampEndpoint)
-	router.GET("/:timestamp", timestampEndpoint)
+	router.GET("/:date", timestampEndpoint)
 }

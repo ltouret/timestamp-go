@@ -23,7 +23,7 @@ func middlewareTimestampAnalytics(analyticsDb *AnalyticsService) gin.HandlerFunc
 		c.Next()
 		responseTime := time.Since(t).String()
 		timestamp := truncateText(t.Format(http.TimeFormat), 255)
-		queryParameters := truncateText(c.Param("timestamp"), 255) //? do i leave this null if no query?
+		queryParameters := truncateText(c.Param("date"), 255) //? do i leave this null if no query?
 		userAgent := truncateText(c.Request.UserAgent(), 255)
 		clientIP := c.ClientIP()
 		statusCode := c.Writer.Status()
