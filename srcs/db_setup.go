@@ -29,9 +29,9 @@ func SetupDb(db *sql.DB) error {
         CREATE TABLE IF NOT EXISTS timestamp (
             id INT AUTO_INCREMENT PRIMARY KEY,
             userAgent VARCHAR(255) DEFAULT NULL,
-            clientIP VARCHAR(255) DEFAULT NULL,
-            timestamp VARCHAR(255) DEFAULT NULL,
-            responseTime VARCHAR(255) DEFAULT NULL,
+            clientIP  CHAR(39) DEFAULT NULL,
+            timestamp CHAR(36) DEFAULT NULL,
+            responseTime CHAR(30) DEFAULT NULL,
             queryParameters VARCHAR(255) DEFAULT NULL,
             statusCode INT DEFAULT NULL,
             userUuid CHAR(36) DEFAULT NULL
