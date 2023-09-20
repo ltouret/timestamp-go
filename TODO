@@ -19,5 +19,3 @@ Move all the db modules to their own module, or at least setup module ->  Clean 
 <!-- Add the other projects of FCC here? -->
 
 Check how to run go in free serverless and just point dns to it? Or in vps with caddy
-
-used gin and air

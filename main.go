@@ -86,23 +86,21 @@ func NewAnalyticsService(db *sql.DB) (*AnalyticsService, error) {
 	return &AnalyticsService{db}, nil
 }
 
-// ? add in .env
-// DB_USER = root
-// DB_PASS =
-// ? dependency injection this or not?
 // ! setup only for timestamp-go, will need more work for others
 // ? here maybe call setupDbTimestamp, setupDbFccProject2
-func SetupDb(db *sql.DB) {
+func SetupDb(db *sql.DB) error {
 	// Check if the database exists
 	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS analytics")
 	if err != nil {
 		fmt.Println("Create Db", err)
+		return err
 	}
 
 	// Switch to the newly created database
 	_, err = db.Exec("USE analytics")
 	if err != nil {
 		fmt.Println("Use Db", err)
+		return err
 	}
 
 	// Create the table if it doesn't exist
@@ -121,29 +119,43 @@ func SetupDb(db *sql.DB) {
     `)
 	if err != nil {
 		fmt.Println("Create Table", err)
+		return err
 	}
 
 	fmt.Println("Database and table initialization completed.")
+	return nil
 }
 
 func main() {
+	retcode := 0
+	defer func() { os.Exit(retcode) }()
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
+		retcode = 1
+		return
 	}
-	// user := os.Getenv("DB_USER")
-	// pass := os.Getenv("DB_PASS")
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/")
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASS")
+	dbIp := os.Getenv("DB_IP")
+	dbPort := os.Getenv("DB_PORT")
+	db, err := sql.Open("mysql", dbUser+dbPass+"@tcp("+dbIp+":"+dbPort+")/")
 	if err != nil {
-		//! quit code here
 		fmt.Println("Connection Db", err)
+		retcode = 1
+		return
 	}
 	defer db.Close()
-	SetupDb(db) //? add here or in another main... -> if in another main no dep injection(?)
+	defer fmt.Println("Hello")
+	if err := SetupDb(db); err != nil { //? add here or in another main... -> if in another main no dep injection(?)
+		retcode = 1
+		return
+	}
 	analyticsDb, err := NewAnalyticsService(db)
 	if err != nil {
-		//! quit code here
 		fmt.Println("analyticsDb", err)
+		retcode = 1
+		return
 	}
 	ginMode := os.Getenv("GIN_MODE")
 	gin.SetMode(ginMode)
