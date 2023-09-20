@@ -8,7 +8,7 @@ API Endpoints
 
 ### 1\. Convert a Date to Unix Timestamp and UTC String
 
-*   **Endpoint**: `/api/:date?`
+*   **Endpoint**: `/api/v1/:date?`
     
 *   **Method**: GET
     
@@ -18,14 +18,12 @@ API Endpoints
     
 *   **Example**:
     
-    Request: `GET /api/1451001600000`
+    Request: `GET /api/v1/792201600000`
     
     Response:
     
-    json
-    
     ```json
-    { "unix": 1451001600000, "utc": "Fri, 25 Dec 2015 00:00:00 GMT" }
+    { "unix": 792201600000, "utc": "Wed, 08 Feb 1995 00:00:00 GMT" }
     ```
     
 
@@ -35,11 +33,9 @@ API Endpoints
     
 *   **Example**:
     
-    Request: `GET /api/invalid-date`
+    Request: `GET /api/v1/invalid-date`
     
     Response:
-    
-    json
     
     ```json
     { "error": "Invalid Date" }
@@ -52,11 +48,9 @@ API Endpoints
     
 *   **Example**:
     
-    Request: `GET /api/`
+    Request: `GET /api/v1/`
     
     Response:
-    
-    json
     
     ```json
     { "unix": [current Unix timestamp in milliseconds], "utc": "[current UTC time in the format: Thu, 01 Jan 1970 00:00:00 GMT]" }
@@ -68,23 +62,17 @@ Usage
 
 1.  Clone the repository:
     
-    bash
-    
     ```bash
-    git clone [repository_url]
+    git clone git@github.com:ltouret/timestamp-go.git
     ```
     
 2.  Navigate to the project directory:
-    
-    bash
     
     ```bash
     cd timestamp-go
     ```
     
 3.  Build and run the application:
-    
-    bash
     
     ```bash
     go build
@@ -97,7 +85,12 @@ Usage
 Dependencies
 ------------
 
-This project uses Go 1.20, so make sure you have Go installed on your system.
+To run this project, you'll need to have the following dependencies installed:
+
+- **Go 1.20**: The Go programming language.
+- **MySQL Driver**: The MySQL driver for Go. You can install it using `go get github.com/go-sql-driver/mysql`.
+- **Gin**: The Gin web framework for Go. You can install it using `go get github.com/gin-gonic/gin`.
+- **godotenv**: A Go package for loading environment variables from a .env file. You can install it using `go get github.com/joho/godotenv`.
 
 License
 -------
