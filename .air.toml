@@ -1,14 +1,15 @@
 # Working directory
 # . or absolute path, please note that the directories following must be under root.
-root = "."
-tmp_dir = "tmp"
+root = "./srcs" # Change to the srcs directory
+tmp_dir = "../tmp" # Adjust the path to the tmp directory
 
 [build]
+# Maybe will fix in linux, if not remove
 poll = true
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./tmp/main ."
+cmd = "go build -o ./tmp/main ./srcs"
 # Binary file yields from `cmd`.
-bin = "tmp/main"
+bin = "../tmp/main"
 # Customize binary.
 full_bin = "APP_ENV=dev APP_USER=air ./tmp/main"
 # Watch these filename extensions.
@@ -28,7 +29,7 @@ log = "air_errors.log"
 
 [log]
 # Show log time
-time = false
+time = true
 
 [color]
 # Customize each part's color. If no color found, use the raw app log.
