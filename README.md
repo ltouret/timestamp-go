@@ -79,7 +79,7 @@ Usage
 3.  Build and run the application:
     
     ```bash
-    go build
+    go build -o ./timestamp-go ./srcs
     ./timestamp-go
     ```
     

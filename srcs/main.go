@@ -31,7 +31,6 @@ func main() {
 		return
 	}
 	defer db.Close()
-	defer fmt.Println("Hello")
 	if err := SetupDb(db); err != nil {
 		retcode = 1
 		return
