@@ -7,6 +7,13 @@ import (
 	"fmt"
 )
 
+// Add dbs for urlShortener
+// we need one for analytics and one for the service itself
+// urlShortener db :
+// original Url
+// uuid of short Url
+
+// analytics db
 func setupTimestampDB(db *sql.DB) error {
 	_, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS timestamp (
@@ -23,7 +30,8 @@ func setupTimestampDB(db *sql.DB) error {
 	return err
 }
 
-func setupheaderParserDB(db *sql.DB) error {
+// analytics db
+func setupHeaderParserDB(db *sql.DB) error {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS headerParser (
 			id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,7 +68,7 @@ func SetupDb(db *sql.DB) error {
 		return err
 	}
 
-	err = setupheaderParserDB(db)
+	err = setupHeaderParserDB(db)
 	if err != nil {
 		fmt.Println("Create Table", err)
 		return err

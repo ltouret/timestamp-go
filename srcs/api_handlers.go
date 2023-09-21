@@ -51,6 +51,14 @@ func whoAmIEndpoint(c *gin.Context) {
 	})
 }
 
+func GETUrlShortenerEndpoint(c *gin.Context) {
+	c.Redirect(http.StatusPermanentRedirect, "http://www.google.com")
+}
+
+func POSTUrlShortenerEndpoint(c *gin.Context) {
+	c.Redirect(http.StatusPermanentRedirect, "http://www.google.com")
+}
+
 func SetupRoutes(router *gin.RouterGroup, analyticsDb *AnalyticsService) {
 	// Timestamp Routes
 	{
@@ -60,7 +68,13 @@ func SetupRoutes(router *gin.RouterGroup, analyticsDb *AnalyticsService) {
 	}
 	// Request Header Routes
 	{
-		headerParser := router.Group("/header-parser") // add mdw for analytics?
-		headerParser.GET("/whoami", whoAmIEndpoint, middlewareheaderParserAnalytics(analyticsDb))
+		headerParser := router.Group("/header-parser", middlewareheaderParserAnalytics(analyticsDb))
+		headerParser.GET("/whoami", whoAmIEndpoint)
+	}
+	// URL Shortener Routes
+	{
+		urlShortener := router.Group("/url-shortener") // add mdw for analytics?
+		urlShortener.POST("/", POSTUrlShortenerEndpoint)
+		urlShortener.GET("/:uuid", GETUrlShortenerEndpoint)
 	}
 }
