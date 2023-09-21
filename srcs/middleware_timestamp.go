@@ -34,3 +34,20 @@ func middlewareTimestampAnalytics(analyticsDb *AnalyticsService) gin.HandlerFunc
 		}
 	}
 }
+
+func middlewareheaderParserAnalytics(analyticsDb *AnalyticsService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := time.Now()
+		c.Next()
+		responseTime := time.Since(t).String()
+		timestamp := truncateText(t.Format(http.TimeFormat), 255)
+		userAgent := truncateText(c.Request.UserAgent(), 255)
+		language := truncateText(c.GetHeader("Accept-Language"), 39)
+		clientIP := c.ClientIP()
+		insertStatement := "INSERT INTO headerParser (timestamp, language, userAgent, clientIP, responseTime) VALUES (?, ?, ?, ?, ?)"
+		_, err := analyticsDb.db.Exec(insertStatement, timestamp, language, userAgent, clientIP, responseTime)
+		if err != nil {
+			fmt.Println("Error inserting data:", err)
+		}
+	}
+}

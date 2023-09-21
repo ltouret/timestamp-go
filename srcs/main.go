@@ -46,7 +46,7 @@ func main() {
 	router := gin.Default()
 	router.Use(gin.Recovery()) // useful for 500 error do i keep this?
 	apiGroup := router.Group("/api")
-	v1 := apiGroup.Group("/v1", middlewareTimestampAnalytics(analyticsDb))
-	SetupRoutes(v1)
+	v1 := apiGroup.Group("/v1")
+	SetupRoutes(v1, analyticsDb)
 	router.Run(":8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
