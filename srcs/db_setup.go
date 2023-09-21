@@ -46,6 +46,39 @@ func setupHeaderParserDB(db *sql.DB) error {
 	return err
 }
 
+func SetupUrlShortenerDb(db *sql.DB) error {
+	// Check if the database exists
+	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS urlShortener")
+	if err != nil {
+		fmt.Println("Create Db", err)
+		return err
+	}
+
+	// Switch to the newly created database
+	_, err = db.Exec("USE urlShortener")
+	if err != nil {
+		fmt.Println("Use Db", err)
+		return err
+	}
+
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS headerParser (
+		id INT AUTO_INCREMENT PRIMARY KEY,
+		userAgent VARCHAR(255) DEFAULT NULL,
+		clientIP  CHAR(39) DEFAULT NULL,
+		timestamp CHAR(36) DEFAULT NULL,
+		language CHAR(39) DEFAULT NULL,
+		responseTime CHAR(30) DEFAULT NULL,
+		userUuid CHAR(36) DEFAULT NULL
+	)
+	`)
+	if err != nil {
+		fmt.Println("Create Table", err)
+		return err
+	}
+	return nil
+}
+
 func SetupDb(db *sql.DB) error {
 	// Check if the database exists
 	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS analytics")
