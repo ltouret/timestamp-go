@@ -43,7 +43,24 @@ func noTimestampEndpoint(c *gin.Context) {
 	})
 }
 
-func SetupRoutes(router *gin.RouterGroup) {
-	router.GET("/", noTimestampEndpoint)
-	router.GET("/:date", timestampEndpoint)
+func whoAmIEndpoint(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"ipaddress": c.ClientIP(),
+		"language":  c.GetHeader("Accept-Language"),
+		"software":  c.Request.UserAgent(),
+	})
+}
+
+func SetupRoutes(router *gin.RouterGroup, analyticsDb *AnalyticsService) {
+	// Timestamp Routes
+	{
+		timestamp := router.Group("/timestamp", middlewareTimestampAnalytics(analyticsDb))
+		timestamp.GET("/", noTimestampEndpoint)
+		timestamp.GET("/:date", timestampEndpoint)
+	}
+	// Request Header Routes
+	{
+		headerParser := router.Group("/header-parser") // add mdw for analytics?
+		headerParser.GET("/whoami", whoAmIEndpoint, middlewareheaderParserAnalytics(analyticsDb))
+	}
 }
