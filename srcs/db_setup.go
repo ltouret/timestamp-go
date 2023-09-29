@@ -7,12 +7,6 @@ import (
 	"fmt"
 )
 
-// Add dbs for urlShortener
-// we need one for analytics and one for the service itself
-// urlShortener db :
-// original Url
-// uuid of short Url
-
 // analytics db
 func setupTimestampDB(db *sql.DB) error {
 	_, err := db.Exec(`
@@ -46,6 +40,7 @@ func setupHeaderParserDB(db *sql.DB) error {
 	return err
 }
 
+// ! add dependency injection for shortUrl db
 func SetupUrlShortenerDb(db *sql.DB) error {
 	// Check if the database exists
 	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS urlShortener")
@@ -61,15 +56,12 @@ func SetupUrlShortenerDb(db *sql.DB) error {
 		return err
 	}
 
+	// save max 65,535 TEXT, so add protection
+	// could save just uuid and when user checks if uuid exist then redirect to original url, saving shortUrl useless
 	_, err = db.Exec(`
 	CREATE TABLE IF NOT EXISTS headerParser (
-		id INT AUTO_INCREMENT PRIMARY KEY,
-		userAgent VARCHAR(255) DEFAULT NULL,
-		clientIP  CHAR(39) DEFAULT NULL,
-		timestamp CHAR(36) DEFAULT NULL,
-		language CHAR(39) DEFAULT NULL,
-		responseTime CHAR(30) DEFAULT NULL,
-		userUuid CHAR(36) DEFAULT NULL
+		uuid UUID PRIMARY KEY,
+		originalUrl TEXT DEFAULT NULL
 	)
 	`)
 	if err != nil {
@@ -79,6 +71,7 @@ func SetupUrlShortenerDb(db *sql.DB) error {
 	return nil
 }
 
+// ? here call setup analytics db, setup shortUrl db, setup exercise db, etc
 func SetupDb(db *sql.DB) error {
 	// Check if the database exists
 	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS analytics")

@@ -3,11 +3,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func timestampEndpoint(c *gin.Context) {
@@ -51,12 +54,32 @@ func whoAmIEndpoint(c *gin.Context) {
 	})
 }
 
+// ! if the original url already exists then dont write to the db, return the uuid that exists already
 func GETUrlShortenerEndpoint(c *gin.Context) {
 	c.Redirect(http.StatusPermanentRedirect, "http://www.google.com")
 }
 
+// ! use better validator
+type ShortUrlJsonBody struct {
+	Url string `json:"url"`
+}
+
 func POSTUrlShortenerEndpoint(c *gin.Context) {
-	c.Redirect(http.StatusPermanentRedirect, "http://www.google.com")
+	// var dummyDb map[string]string = make(map[string]string)
+	var body ShortUrlJsonBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid url"})
+		return
+	}
+	parsedUrl, err := url.ParseRequestURI(body.Url)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid url"})
+		return
+	}
+	uuidV4 := uuid.New()
+	fmt.Println(uuidV4, parsedUrl)
+	c.JSON(http.StatusCreated, gin.H{"original_url": body.Url, "short_url": uuidV4})
+	// c.Redirect(http.StatusPermanentRedirect, "http://www.google.com")
 }
 
 func SetupRoutes(router *gin.RouterGroup, analyticsDb *AnalyticsService) {
